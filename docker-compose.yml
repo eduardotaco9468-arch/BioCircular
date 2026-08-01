@@ -1,0 +1,267 @@
+services:
+  frontend:
+    build: ./frontend/biocircular-web
+    ports: ["4200:80"]
+    depends_on:
+      auth-service: { condition: service_healthy }
+      gestion-service: { condition: service_healthy }
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/ >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  auth-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AUTH_POSTGRES_DB}
+    volumes: [auth-postgres-data:/var/lib/postgresql/data]
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gestion-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${GESTION_POSTGRES_DB}
+    volumes: [gestion-postgres-data:/var/lib/postgresql/data]
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  compostaje-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${COMPOSTAJE_POSTGRES_DB}
+    volumes: [compostaje-postgres-data:/var/lib/postgresql/data]
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  reportes-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${REPORTES_POSTGRES_DB}
+    volumes: [reportes-postgres-data:/var/lib/postgresql/data]
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auditoria-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AUDITORIA_POSTGRES_DB}
+    volumes: [auditoria-postgres-data:/var/lib/postgresql/data]
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    build: ./backend/auth-service
+    ports: ["8081:8080"]
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/${AUTH_POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+    depends_on:
+      auth-db: { condition: service_healthy }
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+
+  gestion-service:
+    build: ./backend/gestion-service
+    ports: ["8082:8080"]
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://gestion-db:5432/${GESTION_POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      NOTIFICACIONES_SERVICE_URL: http://notificaciones-service:8080
+      AUDITORIA_SERVICE_URL: http://auditoria-service:8080
+    depends_on:
+      gestion-db: { condition: service_healthy }
+      auth-service: { condition: service_healthy }
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+
+  compostaje-service:
+    build: ./backend/compostaje-service
+    ports: ["8083:8080"]
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://compostaje-db:5432/${COMPOSTAJE_POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      GESTION_SERVICE_URL: http://gestion-service:8080
+      REPORTES_SERVICE_URL: http://reportes-service:8080
+      AUDITORIA_SERVICE_URL: http://auditoria-service:8080
+    depends_on:
+      compostaje-db: { condition: service_healthy }
+      auth-service: { condition: service_healthy }
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+
+  reportes-service:
+    build: ./backend/reportes-service
+    ports: ["8084:8080"]
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://reportes-db:5432/${REPORTES_POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      GESTION_SERVICE_URL: http://gestion-service:8080
+      COMPOSTAJE_SERVICE_URL: http://compostaje-service:8080
+    depends_on:
+      reportes-db: { condition: service_healthy }
+      auth-service: { condition: service_healthy }
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+
+  auditoria-service:
+    build: ./backend/auditoria-service
+    ports: ["8085:8080"]
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auditoria-db:5432/${AUDITORIA_POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+    depends_on:
+      auditoria-db: { condition: service_healthy }
+      auth-service: { condition: service_healthy }
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+
+  notificaciones-service:
+    build: ./backend/notificaciones-service
+    ports: ["8086:8080"]
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+    depends_on:
+      auth-service: { condition: service_healthy }
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+
+  monitoring-service:
+    build: ./backend/monitoring-service
+    ports: ["8087:8080"]
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SERVICE_URL: http://auth-service:8080
+      GESTION_SERVICE_URL: http://gestion-service:8080
+      COMPOSTAJE_SERVICE_URL: http://compostaje-service:8080
+      REPORTES_SERVICE_URL: http://reportes-service:8080
+      AUDITORIA_SERVICE_URL: http://auditoria-service:8080
+      NOTIFICACIONES_SERVICE_URL: http://notificaciones-service:8080
+    depends_on:
+      auth-service: { condition: service_healthy }
+      gestion-service: { condition: service_healthy }
+      compostaje-service: { condition: service_healthy }
+      reportes-service: { condition: service_healthy }
+      auditoria-service: { condition: service_healthy }
+      notificaciones-service: { condition: service_healthy }
+    networks: [compostaje-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+
+networks:
+  compostaje-network:
+    name: compostaje-network
+    driver: bridge
+
+volumes:
+  auth-postgres-data:
+  gestion-postgres-data:
+  compostaje-postgres-data:
+  reportes-postgres-data:
+  auditoria-postgres-data:
