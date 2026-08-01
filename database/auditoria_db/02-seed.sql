@@ -1,0 +1,1 @@
+-- No se insertan eventos de auditoría iniciales: deben reflejar acciones reales.

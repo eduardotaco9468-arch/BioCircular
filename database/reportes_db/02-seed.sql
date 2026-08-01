@@ -1,0 +1,1 @@
+-- Los indicadores se calculan en ejecución; no se precargan valores ficticios.

@@ -1,0 +1,1 @@
+-- Catálogos de estados se implementan mediante CHECK para evitar tablas redundantes.
