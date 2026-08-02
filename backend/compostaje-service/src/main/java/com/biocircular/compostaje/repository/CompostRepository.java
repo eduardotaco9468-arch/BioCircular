@@ -1,0 +1,1 @@
+package com.biocircular.compostaje.repository; import com.biocircular.compostaje.entity.Compost; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface CompostRepository extends JpaRepository<Compost,UUID>{ Optional<Compost> findByLoteId(UUID loteId); }

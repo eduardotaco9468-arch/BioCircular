@@ -1,0 +1,1 @@
+package com.biocircular.compostaje.repository; import com.biocircular.compostaje.entity.*; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface LoteEtapaRepository extends JpaRepository<LoteEtapa,UUID>{ List<LoteEtapa> findByLoteIdOrderByFechaInicio(UUID loteId); boolean existsByLoteIdAndEtapaId(UUID loteId,UUID etapaId); }

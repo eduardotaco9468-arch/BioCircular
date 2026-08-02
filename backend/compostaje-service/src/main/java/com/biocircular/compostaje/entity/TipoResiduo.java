@@ -1,0 +1,3 @@
+package com.biocircular.compostaje.entity;
+import jakarta.persistence.*; import java.util.UUID;
+@Entity @Table(name="tipo_residuo") public class TipoResiduo { @Id @GeneratedValue private UUID id; @Column(nullable=false,unique=true) private String codigo; @Column(nullable=false,unique=true) private String nombre; private String descripcion; private boolean activo=true; public UUID getId(){return id;} public String getCodigo(){return codigo;} public void setCodigo(String v){codigo=v;} public String getNombre(){return nombre;} public void setNombre(String v){nombre=v;} public String getDescripcion(){return descripcion;} public void setDescripcion(String v){descripcion=v;} public boolean isActivo(){return activo;} public void setActivo(boolean v){activo=v;} }

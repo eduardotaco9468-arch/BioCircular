@@ -18,3 +18,10 @@ INSERT INTO rol_permiso (rol_id, permiso_id)
 SELECT r.id, p.id FROM rol r JOIN permiso p ON p.codigo IN ('COMPOSTAJE_LEER','COMPOSTAJE_GESTIONAR') WHERE r.codigo = 'TECNICO';
 INSERT INTO rol_permiso (rol_id, permiso_id)
 SELECT r.id, p.id FROM rol r JOIN permiso p ON p.codigo IN ('REPORTES_LEER') WHERE r.codigo = 'CLIENTE';
+
+-- Cuenta inicial exclusiva para el entorno local. Cámbiela al primer inicio de sesión.
+INSERT INTO usuario (nombres, apellidos, correo, contrasena_hash, cargo)
+VALUES ('Administrador', 'BioCircular', 'admin@biocircular.local', crypt('Admin123!', gen_salt('bf')), 'Administrador');
+INSERT INTO usuario_rol (usuario_id, rol_id)
+SELECT u.id, r.id FROM usuario u JOIN rol r ON r.codigo = 'ADMIN'
+WHERE u.correo = 'admin@biocircular.local';

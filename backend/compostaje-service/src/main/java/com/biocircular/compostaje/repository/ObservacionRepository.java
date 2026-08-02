@@ -1,0 +1,1 @@
+package com.biocircular.compostaje.repository; import com.biocircular.compostaje.entity.ObservacionEtapa; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface ObservacionRepository extends JpaRepository<ObservacionEtapa,UUID>{ List<ObservacionEtapa> findByLoteEtapaLoteIdOrderByFechaHora(UUID loteId); }

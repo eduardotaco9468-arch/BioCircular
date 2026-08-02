@@ -1,0 +1,1 @@
+package com.biocircular.gestion; import org.springframework.web.bind.annotation.*; import java.util.*; @RestController @RequestMapping("/api") public class GestionController{@GetMapping("/{recurso:clientes|contenedores|operadores|vehiculos|rutas|recolecciones}") List<Map<String,Object>> listar(@PathVariable String recurso){return List.of();}}

@@ -1,0 +1,27 @@
+﻿server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://reportes-db:5432/${REPORTES_POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+app:
+  jwt-secret: ${JWT_SECRET:development_only_change_before_deployment_2026}
+  gestion-url: ${GESTION_SERVICE_URL:http://gestion-service:8080}
+  compostaje-url: ${COMPOSTAJE_SERVICE_URL:http://compostaje-service:8080}
+  auditoria-url: ${AUDITORIA_SERVICE_URL:http://auditoria-service:8080}

@@ -8,18 +8,22 @@ services:
     networks: [compostaje-network]
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost/ >/dev/null 2>&1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ >/dev/null 2>&1"]
       interval: 30s
       timeout: 5s
       retries: 3
 
   auth-db:
     image: postgres:16-alpine
+    ports: ["5433:5432"]
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${AUTH_POSTGRES_DB}
-    volumes: [auth-postgres-data:/var/lib/postgresql/data]
+    volumes:
+      - auth-postgres-data:/var/lib/postgresql/data
+      - ./database/auth_db/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/auth_db/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     networks: [compostaje-network]
     restart: unless-stopped
     healthcheck:
@@ -30,11 +34,15 @@ services:
 
   gestion-db:
     image: postgres:16-alpine
+    ports: ["5434:5432"]
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${GESTION_POSTGRES_DB}
-    volumes: [gestion-postgres-data:/var/lib/postgresql/data]
+    volumes:
+      - gestion-postgres-data:/var/lib/postgresql/data
+      - ./database/gestion_db/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/gestion_db/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     networks: [compostaje-network]
     restart: unless-stopped
     healthcheck:
@@ -45,11 +53,15 @@ services:
 
   compostaje-db:
     image: postgres:16-alpine
+    ports: ["5435:5432"]
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${COMPOSTAJE_POSTGRES_DB}
-    volumes: [compostaje-postgres-data:/var/lib/postgresql/data]
+    volumes:
+      - compostaje-postgres-data:/var/lib/postgresql/data
+      - ./database/compostaje_db/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/compostaje_db/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     networks: [compostaje-network]
     restart: unless-stopped
     healthcheck:
@@ -60,11 +72,15 @@ services:
 
   reportes-db:
     image: postgres:16-alpine
+    ports: ["5436:5432"]
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${REPORTES_POSTGRES_DB}
-    volumes: [reportes-postgres-data:/var/lib/postgresql/data]
+    volumes:
+      - reportes-postgres-data:/var/lib/postgresql/data
+      - ./database/reportes_db/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/reportes_db/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     networks: [compostaje-network]
     restart: unless-stopped
     healthcheck:
@@ -75,11 +91,15 @@ services:
 
   auditoria-db:
     image: postgres:16-alpine
+    ports: ["5437:5432"]
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${AUDITORIA_POSTGRES_DB}
-    volumes: [auditoria-postgres-data:/var/lib/postgresql/data]
+    volumes:
+      - auditoria-postgres-data:/var/lib/postgresql/data
+      - ./database/auditoria_db/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/auditoria_db/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     networks: [compostaje-network]
     restart: unless-stopped
     healthcheck:
@@ -96,6 +116,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/${AUTH_POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      
+      AUDITORIA_SERVICE_URL: http://auditoria-service:8080
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
     depends_on:
@@ -117,10 +139,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://gestion-db:5432/${GESTION_POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      
+      AUDITORIA_SERVICE_URL: http://auditoria-service:8080
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       NOTIFICACIONES_SERVICE_URL: http://notificaciones-service:8080
-      AUDITORIA_SERVICE_URL: http://auditoria-service:8080
     depends_on:
       gestion-db: { condition: service_healthy }
       auth-service: { condition: service_healthy }
@@ -141,11 +164,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://compostaje-db:5432/${COMPOSTAJE_POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      
+      AUDITORIA_SERVICE_URL: http://auditoria-service:8080
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       GESTION_SERVICE_URL: http://gestion-service:8080
       REPORTES_SERVICE_URL: http://reportes-service:8080
-      AUDITORIA_SERVICE_URL: http://auditoria-service:8080
     depends_on:
       compostaje-db: { condition: service_healthy }
       auth-service: { condition: service_healthy }
@@ -166,6 +190,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://reportes-db:5432/${REPORTES_POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      
+      AUDITORIA_SERVICE_URL: http://auditoria-service:8080
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       GESTION_SERVICE_URL: http://gestion-service:8080
@@ -190,6 +216,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://auditoria-db:5432/${AUDITORIA_POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      
+      AUDITORIA_SERVICE_URL: http://auditoria-service:8080
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
     depends_on:

@@ -1,0 +1,1 @@
+package com.biocircular.monitoring; import org.springframework.boot.*; import org.springframework.boot.autoconfigure.*; @SpringBootApplication public class MonitoringApplication{public static void main(String[]a){SpringApplication.run(MonitoringApplication.class,a);}}
