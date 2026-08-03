@@ -1,1 +1,0 @@
-package com.biocircular.compostaje.repository; import com.biocircular.compostaje.entity.MovimientoInventario; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface MovimientoRepository extends JpaRepository<MovimientoInventario,UUID>{ List<MovimientoInventario> findByCompostIdOrderByFechaHoraDesc(UUID compostId); }

@@ -1,1 +1,0 @@
-package com.biocircular.auditoria; import org.springframework.boot.*; import org.springframework.boot.autoconfigure.*; @SpringBootApplication public class AuditoriaApplication{public static void main(String[]a){SpringApplication.run(AuditoriaApplication.class,a);}}

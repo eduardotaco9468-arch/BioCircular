@@ -1,0 +1,116 @@
+services:
+
+  auth-db:
+
+    image: postgres:16
+
+    container_name: auth-db
+
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  
+  gestion-db:
+
+    image: postgres:16
+
+    container_name: gestion-db
+
+    environment:
+      POSTGRES_DB: gestion_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - gestion_postgres_data:/var/lib/postgresql/data
+  
+  compost-db:
+
+    image: postgres:16
+
+    container_name: compost-db
+
+    environment:
+      POSTGRES_DB: compost_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5434:5432"
+
+    volumes:
+      - compost_postgres_data:/var/lib/postgresql/data
+
+
+  auth-service:
+
+    build:
+      context: ./backend/auth-service
+
+    container_name: auth-service
+
+    ports:
+      - "8081:8081"
+
+    depends_on:
+      - auth-db
+
+  gestion-service:
+
+    build:
+      context: ./backend/gestion-service
+
+    container_name: gestion-service
+
+    ports:
+      - "8082:8082"
+
+    depends_on:
+      - gestion-db
+
+  compostaje-service:
+
+    build:
+      context: ./backend/compostaje-service
+
+    container_name: compostaje-service
+
+    ports:
+      - "8083:8083"
+
+    depends_on:
+      - compost-db
+
+  api-gateway:
+
+    build:
+      context: ./backend/api-gateway
+
+    container_name: api-gateway
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      - auth-service
+
+
+
+volumes:
+
+  postgres_data:
+
+  gestion_postgres_data:
+
+  compost_postgres_data:

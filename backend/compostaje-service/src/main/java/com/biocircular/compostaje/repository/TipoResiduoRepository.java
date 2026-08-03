@@ -1,1 +1,0 @@
-package com.biocircular.compostaje.repository; import com.biocircular.compostaje.entity.TipoResiduo; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface TipoResiduoRepository extends JpaRepository<TipoResiduo,UUID>{ List<TipoResiduo> findByActivoTrueOrderByNombre(); boolean existsByCodigo(String codigo); }

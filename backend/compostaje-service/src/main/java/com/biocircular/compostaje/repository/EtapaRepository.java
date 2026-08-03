@@ -1,1 +1,0 @@
-package com.biocircular.compostaje.repository; import com.biocircular.compostaje.entity.EtapaCompostaje; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface EtapaRepository extends JpaRepository<EtapaCompostaje,UUID>{ Optional<EtapaCompostaje> findFirstByActivoTrueOrderByOrden(); }
