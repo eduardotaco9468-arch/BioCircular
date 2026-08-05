@@ -1,0 +1,68 @@
+<form [formGroup]="clienteForm" (ngSubmit)="guardar()">
+
+  <div class="mb-3">
+    <label class="form-label">Nombre <span class="text-danger" aria-hidden="true">*</span></label>
+    <input class="form-control" formControlName="nombre" [class.is-invalid]="campoInvalido('nombre')" [class.is-valid]="clienteForm.get('nombre')?.valid && clienteForm.get('nombre')?.touched">
+    @if (campoInvalido('nombre')) {
+      <div class="invalid-feedback">
+        @if (clienteForm.get('nombre')?.hasError('required')) { El nombre es requerido. }
+        @else if (clienteForm.get('nombre')?.hasError('minlength')) { El nombre debe tener al menos 3 caracteres. }
+        @else if (clienteForm.get('nombre')?.hasError('maxlength')) { El nombre no puede superar 100 caracteres. }
+        @else if (clienteForm.get('nombre')?.hasError('pattern')) { No se permiten números en este campo. }
+      </div>
+    }
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Cédula <span class="text-danger" aria-hidden="true">*</span></label>
+    <input class="form-control" formControlName="cedula" [class.is-invalid]="campoInvalido('cedula')" [class.is-valid]="clienteForm.get('cedula')?.valid && clienteForm.get('cedula')?.touched">
+    @if (campoInvalido('cedula')) { <div class="invalid-feedback">La cédula debe contener exactamente 10 dígitos.</div> }
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Correo <span class="text-danger" aria-hidden="true">*</span></label>
+    <input type="email" class="form-control" formControlName="correo" [class.is-invalid]="campoInvalido('correo')" [class.is-valid]="clienteForm.get('correo')?.valid && clienteForm.get('correo')?.touched">
+    @if (campoInvalido('correo')) {
+      <div class="invalid-feedback">
+        @if (clienteForm.get('correo')?.hasError('required')) { El correo es requerido. }
+        @else { No es un correo válido. }
+      </div>
+    }
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Teléfono <span class="text-danger" aria-hidden="true">*</span></label>
+    <input class="form-control" formControlName="telefono" [class.is-invalid]="campoInvalido('telefono')" [class.is-valid]="clienteForm.get('telefono')?.valid && clienteForm.get('telefono')?.touched">
+    @if (campoInvalido('telefono')) { <div class="invalid-feedback">El teléfono debe tener 10 números.</div> }
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Dirección <span class="text-danger" aria-hidden="true">*</span></label>
+    <input class="form-control" formControlName="direccion" [class.is-invalid]="campoInvalido('direccion')" [class.is-valid]="clienteForm.get('direccion')?.valid && clienteForm.get('direccion')?.touched">
+    @if (campoInvalido('direccion')) { <div class="invalid-feedback">La dirección es requerida.</div> }
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Sector <span class="text-danger" aria-hidden="true">*</span></label>
+    <input class="form-control" formControlName="sector" [class.is-invalid]="campoInvalido('sector')" [class.is-valid]="clienteForm.get('sector')?.valid && clienteForm.get('sector')?.touched">
+    @if (campoInvalido('sector')) { <div class="invalid-feedback">El sector es requerido.</div> }
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Tipo <span class="text-danger" aria-hidden="true">*</span></label>
+    <select class="form-select" formControlName="tipo" [class.is-invalid]="campoInvalido('tipo')" [class.is-valid]="clienteForm.get('tipo')?.valid && clienteForm.get('tipo')?.touched">
+      <option value="Residencial">Residencial</option>
+      <option value="Comercial">Comercial</option>
+    </select>
+    @if (campoInvalido('tipo')) { <div class="invalid-feedback">El tipo es requerido.</div> }
+  </div>
+
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" formControlName="estado">
+    <label class="form-check-label">Activo <span class="text-danger" aria-hidden="true">*</span></label>
+    @if (campoInvalido('estado')) { <div class="invalid-feedback d-block">El estado es requerido.</div> }
+  </div>
+
+  <button class="btn btn-success me-2" type="submit" [disabled]="clienteForm.invalid">Guardar Cliente</button>
+  <button class="btn btn-outline-secondary" type="button" (click)="cancelarFormulario()">Cancelar</button>
+</form>

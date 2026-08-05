@@ -1,0 +1,16 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4"><h2>Rutas</h2><button class="btn btn-success" (click)="abrirModal()"><i class="bi bi-signpost-split me-1"></i>Nueva Ruta</button></div>
+  @if (mostrarModal) {<app-ruta-modal [rutaEditar]="rutaSeleccionada" (cerrar)="cerrarModal()" (guardar)="guardarRuta($event)"></app-ruta-modal>}
+  <form class="row mb-4" [formGroup]="filtroForm">
+    <div class="col-md-6 mb-2 mb-md-0"><input type="text" class="form-control" placeholder="Buscar por nombre, sector, operador u horario..." formControlName="busqueda"></div>
+    <div class="col-md-4"><select class="form-select" formControlName="sectorSeleccionado"><option value="">Todos los sectores</option><option value="Centro">Centro</option><option value="Norte">Norte</option><option value="Sur">Sur</option></select></div>
+  </form>
+  <div class="card shadow-sm"><div class="card-body"><div class="table-responsive"><table class="table table-hover align-middle mb-0">
+    <thead><tr><th>Nombre</th><th>Sector</th><th>Operador</th><th>Horario</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>
+      @for (ruta of rutasFiltradas; track ruta.id) {
+        <tr><td>{{ ruta.nombre }}</td><td>{{ ruta.sector }}</td><td>{{ ruta.operador }}</td><td>{{ ruta.horario }}</td><td>@if (ruta.estado) {<span class="badge bg-success">Activa</span>} @else {<span class="badge bg-secondary">Inactiva</span>}</td><td><button class="btn btn-sm btn-primary me-2" title="Editar" (click)="editarRuta(ruta)"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" title="Eliminar" (click)="eliminarRuta(ruta)"><i class="bi bi-trash"></i></button></td></tr>
+      } @empty {<tr><td colspan="6" class="text-center text-muted py-4">No se encontraron rutas.</td></tr>}
+    </tbody>
+  </table></div></div></div>
+</div>

@@ -1,0 +1,68 @@
+.sidebar{
+
+    width:270px;
+
+    min-height:100vh;
+
+    background:#198754;
+
+    color:white;
+
+}
+
+
+.sidebar-header{
+
+    height:65px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+}
+
+
+.sidebar-header i{
+
+    font-size:28px;
+
+}
+
+
+.nav-link{
+
+    color:white;
+
+    padding:12px 25px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    cursor:pointer;
+
+}
+
+
+.nav-link:hover{
+
+    background:rgba(255,255,255,0.15);
+
+}
+
+
+.nav-link i{
+
+    font-size:18px;
+
+}

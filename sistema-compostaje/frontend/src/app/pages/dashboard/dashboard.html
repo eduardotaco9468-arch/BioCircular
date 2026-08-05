@@ -1,0 +1,233 @@
+<div class="container-fluid">
+
+
+    <h2 class="mb-4">
+
+        Panel de Control
+
+    </h2>
+
+
+
+    <div class="row">
+
+
+        @for(stat of stats; track stat.title){
+
+
+            <div class="col-md-3 mb-4">
+
+
+                <div class="card shadow-sm">
+
+
+                    <div class="card-body">
+
+
+                        <div class="d-flex align-items-center">
+
+
+                            <div class="me-3">
+
+                                <i class="bi {{stat.icon}} fs-1 text-{{stat.color}}"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <h6 class="text-muted">
+
+                                    {{stat.title}}
+
+                                </h6>
+
+
+                                <h3>
+
+                                    {{stat.value}}
+
+                                </h3>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        }
+
+
+    </div>
+    <div class="card shadow-sm mt-4">
+
+
+        <div class="card-header bg-white">
+
+            <h5 class="mb-0">
+
+                <i class="bi bi-clock-history"></i>
+
+                Actividad reciente
+
+            </h5>
+
+        </div>
+
+
+
+        <div class="card-body">
+
+
+            <div class="table-responsive">
+
+
+                <table class="table table-hover">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Descripción
+                            </th>
+
+                            <th>
+                                Fecha
+                            </th>
+
+                            <th>
+                                Estado
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                        @for(activity of activities; track activity.id){
+
+
+                            <tr>
+
+
+                                <td>
+
+                                    {{activity.description}}
+
+                                </td>
+
+
+                                <td>
+
+                                    {{activity.date}}
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="badge bg-success">
+
+                                        {{activity.status}}
+
+                                    </span>
+
+                                </td>
+
+
+                            </tr>
+
+
+                        }
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+    <div class="card shadow-sm mt-4">
+
+
+    <div class="card-header bg-white">
+
+
+        <h5 class="mb-0">
+
+            <i class="bi bi-lightning-charge"></i>
+
+            Accesos rápidos
+
+        </h5>
+
+
+    </div>
+
+
+
+    <div class="card-body">
+
+
+            <div class="row">
+
+
+                @for(action of actions; track action.title){
+
+
+                    <div class="col-md-3 mb-3">
+
+
+                        <button 
+                            class="btn btn-outline-{{action.color}} w-100 py-3">
+
+
+                            <i class="bi {{action.icon}} fs-3 d-block mb-2"></i>
+
+
+                            {{action.title}}
+
+
+                        </button>
+
+
+                    </div>
+
+
+                }
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>

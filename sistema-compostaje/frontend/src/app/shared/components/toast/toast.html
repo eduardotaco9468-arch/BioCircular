@@ -1,0 +1,79 @@
+<div class="toast-container position-fixed top-0 end-0 p-3">
+
+
+@for(toast of toastService.toasts(); track toast.id){
+
+
+<div 
+class="toast show mb-2"
+role="alert">
+
+
+<div 
+class="toast-header">
+
+
+<strong class="me-auto">
+
+
+@if(toast.tipo === 'success'){
+
+<i class="bi bi-check-circle-fill text-success"></i>
+
+}
+
+
+@if(toast.tipo === 'danger'){
+
+<i class="bi bi-x-circle-fill text-danger"></i>
+
+}
+
+
+@if(toast.tipo === 'warning'){
+
+<i class="bi bi-exclamation-triangle-fill text-warning"></i>
+
+}
+
+
+@if(toast.tipo === 'info'){
+
+<i class="bi bi-info-circle-fill text-info"></i>
+
+}
+
+
+</strong>
+
+
+
+<button
+type="button"
+class="btn-close"
+(click)="cerrar(toast.id)">
+
+</button>
+
+
+</div>
+
+
+
+<div 
+class="toast-body">
+
+
+{{toast.mensaje}}
+
+
+</div>
+
+
+</div>
+
+
+}
+
+
+</div>

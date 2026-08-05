@@ -1,0 +1,10 @@
+<div class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50" style="z-index: 1040;"></div>
+<div class="position-fixed top-50 start-50 translate-middle modal-container" style="z-index: 1050;">
+  <div class="card shadow">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="bi bi-truck me-2"></i>{{ recoleccionEditar ? 'Editar Recolección' : 'Nueva Recolección' }}</h5>
+      <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModal()"></button>
+    </div>
+    <div class="card-body"><app-recoleccion-form [recoleccionEditar]="recoleccionEditar" (guardarRecoleccion)="guardarRecoleccion($event)" (cancelar)="cerrarModal()"></app-recoleccion-form></div>
+  </div>
+</div>

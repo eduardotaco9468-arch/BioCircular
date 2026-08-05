@@ -1,0 +1,44 @@
+.card{
+
+    border:none;
+
+    border-radius:15px;
+
+}
+
+
+.card:hover{
+
+    transform:translateY(-3px);
+
+    transition:.2s;
+
+}
+
+.table{
+
+    vertical-align:middle;
+
+}
+
+
+.card-header{
+
+    border-bottom:1px solid #eee;
+
+}
+
+.btn{
+
+    border-radius:12px;
+
+}
+
+
+.btn:hover{
+
+    transform:translateY(-3px);
+
+    transition:.2s;
+
+}

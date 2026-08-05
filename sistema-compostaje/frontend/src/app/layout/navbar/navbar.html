@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+
+    <div class="container-fluid">
+
+
+        <!-- Botón menú -->
+        <button 
+            class="btn btn-outline-success me-3">
+
+            <i class="bi bi-list"></i>
+
+        </button>
+
+
+
+        <!-- Nombre sistema -->
+        <span class="navbar-brand mb-0 h1">
+
+            Sistema BioCircular
+
+        </span>
+
+
+
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <div class="text-end small lh-sm">
+                <div><strong>Usuario:</strong> {{ authService.obtenerUsuarioActual().email }}</div>
+                <div class="text-secondary"><strong>Rol:</strong> {{ authService.obtenerRol() }}</div>
+            </div>
+            <button class="btn btn-outline-danger" type="button" (click)="cerrarSesion()">
+                <i class="bi bi-box-arrow-right"></i>
+                Cerrar sesión
+            </button>
+        </div>
+
+
+    </div>
+
+</nav>

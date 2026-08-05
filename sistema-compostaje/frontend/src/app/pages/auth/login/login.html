@@ -1,0 +1,33 @@
+<main class="min-vh-100 d-flex align-items-center justify-content-center bg-light p-3">
+  <section class="card border-0 shadow-sm w-100" style="max-width: 480px;">
+    <div class="card-body p-4 p-md-5">
+      <h1 class="h3 text-center mb-4">Sistema de Gestión de Recolección y Compostaje</h1>
+
+      @if (errorLogin) {
+        <div class="alert alert-danger" role="alert">Correo o contraseña incorrectos. Verifica tus credenciales e inténtalo nuevamente.</div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="ingresar()" novalidate>
+        <div class="mb-3">
+          <label for="email" class="form-label">Correo electrónico</label>
+          <input id="email" type="email" class="form-control" formControlName="email" [class.is-invalid]="email.touched && email.invalid" autocomplete="email">
+          @if (email.touched && email.hasError('required')) {
+            <div class="invalid-feedback">El correo electrónico es obligatorio.</div>
+          } @else if (email.touched && email.hasError('email')) {
+            <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+          }
+        </div>
+
+        <div class="mb-4">
+          <label for="password" class="form-label">Contraseña</label>
+          <input id="password" type="password" class="form-control" formControlName="password" [class.is-invalid]="password.touched && password.invalid" autocomplete="current-password">
+          @if (password.touched && password.hasError('required')) {
+            <div class="invalid-feedback">La contraseña es obligatoria.</div>
+          }
+        </div>
+
+        <button type="submit" class="btn btn-success w-100" [disabled]="enviando">{{ enviando ? 'Ingresando...' : 'Ingresar' }}</button>
+      </form>
+    </div>
+  </section>
+</main>
