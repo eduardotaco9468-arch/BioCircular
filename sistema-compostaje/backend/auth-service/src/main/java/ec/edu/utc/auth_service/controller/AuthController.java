@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ec.edu.utc.auth_service.dto.MensajeResponse;
 
 
 
@@ -82,6 +83,23 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MensajeResponse> actualizarUsuario(
+            @PathVariable Long id,
+            @RequestBody CreateUserRequest request
+    ) {
+        usuarioService.actualizarUsuario(id, request);
+        return ResponseEntity.ok(new MensajeResponse("Usuario actualizado correctamente"));
+    }
+
+    @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
+        usuarioService.eliminarUsuario(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/admin/test")
@@ -184,4 +202,10 @@ public class AuthController {
 
     }
 
+    @PostMapping("/internal/create-client-user")
+    public ResponseEntity<UsuarioResponse> createClientUser(@RequestBody CreateUserRequest request) {
+        Usuario usuario = usuarioService.createUserFromClient(request);
+        return ResponseEntity.ok(new UsuarioResponse(usuario.getId(), usuario.getNombre(), usuario.getEmail(), usuario.getRol().getNombre().name()));
+    
+}
 }

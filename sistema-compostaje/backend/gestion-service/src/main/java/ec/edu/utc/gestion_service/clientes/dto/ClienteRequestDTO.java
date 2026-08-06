@@ -24,6 +24,7 @@ public class ClienteRequestDTO {
 
     @NotBlank
     @Email
+    @Size(max = 100)
     private String correo;
 
     @NotBlank
@@ -31,8 +32,10 @@ public class ClienteRequestDTO {
     private String telefono;
 
     @NotBlank
+    @Size(max = 255)
     private String direccion;
 
     @NotBlank
+    @Size(max = 100)
     private String sector;
 }

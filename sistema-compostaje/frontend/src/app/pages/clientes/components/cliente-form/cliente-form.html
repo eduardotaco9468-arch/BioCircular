@@ -14,17 +14,22 @@
   </div>
 
   <div class="mb-3">
-    <label class="form-label">Cédula <span class="text-danger" aria-hidden="true">*</span></label>
-    <input class="form-control" formControlName="cedula" [class.is-invalid]="campoInvalido('cedula')" [class.is-valid]="clienteForm.get('cedula')?.valid && clienteForm.get('cedula')?.touched">
-    @if (campoInvalido('cedula')) { <div class="invalid-feedback">La cédula debe contener exactamente 10 dígitos.</div> }
+    <label class="form-label">Tipo cliente <span class="text-danger" aria-hidden="true">*</span></label>
+    <select class="form-select" formControlName="tipoCliente"><option value="Residencial">Residencial</option><option value="Comercial">Comercial</option></select>
   </div>
 
   <div class="mb-3">
-    <label class="form-label">Correo <span class="text-danger" aria-hidden="true">*</span></label>
+    <label class="form-label">Cédula/RUC <span class="text-danger" aria-hidden="true">*</span></label>
+    <input class="form-control" formControlName="identificacion" [class.is-invalid]="campoInvalido('identificacion')">
+    @if (campoInvalido('identificacion')) { <div class="invalid-feedback">La identificación es obligatoria.</div> }
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Email <span class="text-danger" aria-hidden="true">*</span></label>
     <input type="email" class="form-control" formControlName="correo" [class.is-invalid]="campoInvalido('correo')" [class.is-valid]="clienteForm.get('correo')?.valid && clienteForm.get('correo')?.touched">
     @if (campoInvalido('correo')) {
       <div class="invalid-feedback">
-        @if (clienteForm.get('correo')?.hasError('required')) { El correo es requerido. }
+        @if (clienteForm.get('correo')?.hasError('required')) { El email es requerido. }
         @else { No es un correo válido. }
       </div>
     }
@@ -48,19 +53,9 @@
     @if (campoInvalido('sector')) { <div class="invalid-feedback">El sector es requerido.</div> }
   </div>
 
-  <div class="mb-3">
-    <label class="form-label">Tipo <span class="text-danger" aria-hidden="true">*</span></label>
-    <select class="form-select" formControlName="tipo" [class.is-invalid]="campoInvalido('tipo')" [class.is-valid]="clienteForm.get('tipo')?.valid && clienteForm.get('tipo')?.touched">
-      <option value="Residencial">Residencial</option>
-      <option value="Comercial">Comercial</option>
-    </select>
-    @if (campoInvalido('tipo')) { <div class="invalid-feedback">El tipo es requerido.</div> }
-  </div>
-
   <div class="form-check mb-3">
     <input class="form-check-input" type="checkbox" formControlName="estado">
-    <label class="form-check-label">Activo <span class="text-danger" aria-hidden="true">*</span></label>
-    @if (campoInvalido('estado')) { <div class="invalid-feedback d-block">El estado es requerido.</div> }
+    <label class="form-check-label">Activo</label>
   </div>
 
   <button class="btn btn-success me-2" type="submit" [disabled]="clienteForm.invalid">Guardar Cliente</button>

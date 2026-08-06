@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import ec.edu.utc.gestion_service.exception.ResourceNotFoundException;
 
 
 @RestController
@@ -54,6 +55,11 @@ public class ClienteController {
     }
 
 
+    
+    @GetMapping("/identificacion/{identificacion}")
+    public ResponseEntity<ClienteResponseDTO> buscarPorIdentificacion(@PathVariable String identificacion) {
+        return ResponseEntity.ok(clienteService.buscarPorIdentificacion(identificacion));
+    }
     @PutMapping("/{id}")
     public ResponseEntity<ClienteResponseDTO> actualizar(
             @PathVariable Long id,
@@ -75,3 +81,4 @@ public class ClienteController {
     }
 
 }
+

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
 
@@ -34,6 +35,15 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class, MethodArgumentNotValidException.class})
+    public ResponseEntity<ErrorResponse> handleValidation(Exception ex) {
+        String message = ex instanceof MethodArgumentNotValidException validationException
+                ? validationException.getBindingResult().getFieldError().getDefaultMessage()
+                : ex.getMessage();
+        ErrorResponse error = new ErrorResponse(message, HttpStatus.BAD_REQUEST.value(), LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
 

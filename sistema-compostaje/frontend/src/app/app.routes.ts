@@ -28,6 +28,7 @@ export const routes: Routes = [
             { path: 'clientes', component: Clientes },
             { path: 'usuarios', component: Usuarios },
             { path: 'recolecciones', component: Recolecciones },
+            { path: 'clientes', component: Clientes },
             { path: 'rutas', component: Rutas },
             { path: 'incidencias', component: Incidencias },
             { path: 'contenedores', loadComponent: () => import('./features/contenedores/components/contenedor-list/contenedor-list.component').then(c => c.ContenedorListComponent) },

@@ -1,15 +1,32 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Mantenimiento } from '../models/mantenimiento.model';
+import { API_BASE_URL } from '../../../core/services/api.service';
 
 @Injectable({ providedIn: 'root' })
 export class MantenimientoService {
-  private mantenimientos: Mantenimiento[] = [
-    { id: 1, vehiculoId: 1, fecha: new Date(), tipo: 'Preventivo', descripcion: 'Cambio de aceite del motor', costo: 120, estado: 'Finalizado' },
-    { id: 2, vehiculoId: 2, fecha: new Date(), tipo: 'Correctivo', descripcion: 'Revisión sistema eléctrico', costo: 250, estado: 'Pendiente' }
-  ];
-  obtenerTodos(): Mantenimiento[] { return [...this.mantenimientos]; }
-  obtenerPorId(id: number): Mantenimiento | undefined { return this.mantenimientos.find(mantenimiento => mantenimiento.id === id); }
-  crear(datos: Omit<Mantenimiento, 'id'>): Mantenimiento { const nuevo = { id: Math.max(0, ...this.mantenimientos.map(item => item.id)) + 1, ...datos }; this.mantenimientos.push(nuevo); return nuevo; }
-  actualizar(mantenimiento: Mantenimiento): void { const indice = this.mantenimientos.findIndex(item => item.id === mantenimiento.id); if (indice !== -1) this.mantenimientos[indice] = mantenimiento; }
-  eliminar(id: number): void { this.mantenimientos = this.mantenimientos.filter(mantenimiento => mantenimiento.id !== id); }
+  private readonly apiUrl = `${API_BASE_URL}/gestion/mantenimientos`;
+
+  constructor(private readonly http: HttpClient) {}
+
+  obtenerTodos(): Observable<Mantenimiento[]> {
+    return this.http.get<Mantenimiento[]>(this.apiUrl);
+  }
+
+  getById(id: number): Observable<Mantenimiento> {
+    return this.http.get<Mantenimiento>(`${this.apiUrl}/${id}`);
+  }
+
+  crear(datos: Omit<Mantenimiento, 'id'>): Observable<Mantenimiento> {
+    return this.http.post<Mantenimiento>(this.apiUrl, datos);
+  }
+
+  actualizar(mantenimiento: Mantenimiento): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${mantenimiento.id}`, mantenimiento);
+  }
+
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

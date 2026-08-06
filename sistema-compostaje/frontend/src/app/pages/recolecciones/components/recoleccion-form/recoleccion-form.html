@@ -1,11 +1,200 @@
-<form [formGroup]="recoleccionForm" (ngSubmit)="guardar()">
-  <div class="row">
-    <div class="col-md-6 mb-3"><label class="form-label" for="cliente">Cliente</label><input id="cliente" class="form-control" formControlName="cliente" [class.is-invalid]="recoleccionForm.get('cliente')?.invalid && recoleccionForm.get('cliente')?.touched">@if (recoleccionForm.get('cliente')?.invalid && recoleccionForm.get('cliente')?.touched) {<div class="invalid-feedback">El cliente es obligatorio.</div>}</div>
-    <div class="col-md-6 mb-3"><label class="form-label" for="operador">Operador</label><input id="operador" class="form-control" formControlName="operador" [class.is-invalid]="recoleccionForm.get('operador')?.invalid && recoleccionForm.get('operador')?.touched">@if (recoleccionForm.get('operador')?.invalid && recoleccionForm.get('operador')?.touched) {<div class="invalid-feedback">El operador es obligatorio.</div>}</div>
-    <div class="col-md-6 mb-3"><label class="form-label" for="vehiculo">Vehículo</label><input id="vehiculo" class="form-control" formControlName="vehiculo" [class.is-invalid]="recoleccionForm.get('vehiculo')?.invalid && recoleccionForm.get('vehiculo')?.touched">@if (recoleccionForm.get('vehiculo')?.invalid && recoleccionForm.get('vehiculo')?.touched) {<div class="invalid-feedback">El vehículo es obligatorio.</div>}</div>
-    <div class="col-md-6 mb-3"><label class="form-label" for="fecha">Fecha</label><input id="fecha" type="date" class="form-control" formControlName="fecha" [class.is-invalid]="recoleccionForm.get('fecha')?.invalid && recoleccionForm.get('fecha')?.touched">@if (recoleccionForm.get('fecha')?.invalid && recoleccionForm.get('fecha')?.touched) {<div class="invalid-feedback">La fecha es obligatoria.</div>}</div>
-    <div class="col-md-6 mb-3"><label class="form-label" for="peso">Peso (kg)</label><input id="peso" type="number" min="0.01" step="0.01" class="form-control" formControlName="peso" [class.is-invalid]="recoleccionForm.get('peso')?.invalid && recoleccionForm.get('peso')?.touched">@if (recoleccionForm.get('peso')?.invalid && recoleccionForm.get('peso')?.touched) {<div class="invalid-feedback">Ingrese un peso mayor a cero.</div>}</div>
-    <div class="col-md-6 mb-3"><label class="form-label" for="estado">Estado</label><select id="estado" class="form-select" formControlName="estado"><option value="Pendiente">Pendiente</option><option value="Completada">Completada</option><option value="Cancelada">Cancelada</option></select></div>
+<form [formGroup]="recoleccionForm" (ngSubmit)="guardar()" class="row g-3">
+
+  <div class="col-md-4">
+    <label class="form-label" for="clienteId">Cliente</label>
+    <input
+      id="clienteId"
+      type="number"
+      class="form-control"
+      formControlName="clienteId"
+      [class.is-invalid]="campoInvalido('clienteId')">
+
+    <div class="invalid-feedback">
+      El cliente es obligatorio.
+    </div>
   </div>
-  <button class="btn btn-success me-2" type="submit"><i class="bi bi-save me-1"></i>Guardar Recolección</button><button class="btn btn-outline-secondary" type="button" (click)="cancelarFormulario()">Cancelar</button>
+
+
+  <div class="col-md-4">
+    <label class="form-label" for="operadorId">Operador</label>
+    <input
+      id="operadorId"
+      type="number"
+      class="form-control"
+      formControlName="operadorId">
+  </div>
+
+
+  <div class="col-md-4">
+    <label class="form-label" for="vehiculoId">Vehículo</label>
+    <input
+      id="vehiculoId"
+      type="number"
+      class="form-control"
+      formControlName="vehiculoId">
+  </div>
+
+
+  <div class="col-md-6">
+    <label class="form-label" for="fechaProgramada">
+      Fecha programada
+    </label>
+
+    <input
+      id="fechaProgramada"
+      type="datetime-local"
+      class="form-control"
+      formControlName="fechaProgramada"
+      [class.is-invalid]="campoInvalido('fechaProgramada')">
+
+    <div class="invalid-feedback">
+      La fecha programada es obligatoria.
+    </div>
+  </div>
+
+
+  <div class="col-md-6">
+    <label class="form-label" for="fechaRealizada">
+      Fecha realizada
+    </label>
+
+    <input
+      id="fechaRealizada"
+      type="datetime-local"
+      class="form-control"
+      formControlName="fechaRealizada">
+  </div>
+
+
+  <div class="col-md-4">
+
+    <label class="form-label" for="estado">
+      Estado
+    </label>
+
+    <select
+      id="estado"
+      class="form-select"
+      formControlName="estado"
+      [class.is-invalid]="campoInvalido('estado')">
+
+      <option value="PENDIENTE">
+        Pendiente
+      </option>
+
+      <option value="EN_PROCESO">
+        En proceso
+      </option>
+
+      <option value="REALIZADA">
+        Realizada
+      </option>
+
+      <option value="CANCELADA">
+        Cancelada
+      </option>
+
+    </select>
+
+    <div class="invalid-feedback">
+      El estado es obligatorio.
+    </div>
+
+  </div>
+
+
+  <div class="col-md-4">
+
+    <label class="form-label" for="pesoRecolectado">
+      Peso recolectado
+    </label>
+
+    <input
+      id="pesoRecolectado"
+      type="number"
+      min="0.01"
+      step="0.01"
+      class="form-control"
+      formControlName="pesoRecolectado"
+      [class.is-invalid]="campoInvalido('pesoRecolectado')">
+
+    <div class="invalid-feedback">
+      Ingrese un peso válido mayor a 0.
+    </div>
+
+  </div>
+
+
+  <div class="col-md-4">
+
+    <label class="form-label" for="unidad">
+      Unidad
+    </label>
+
+    <select
+      id="unidad"
+      class="form-select"
+      formControlName="unidad"
+      [class.is-invalid]="campoInvalido('unidad')">
+
+      <option value="KILOGRAMOS">
+        Kilogramos
+      </option>
+
+      <option value="LITROS">
+        Litros
+      </option>
+
+      <option value="TONELADAS">
+        Toneladas
+      </option>
+
+    </select>
+
+    <div class="invalid-feedback">
+      La unidad es obligatoria.
+    </div>
+
+  </div>
+
+
+  <div class="col-12">
+
+    <label class="form-label" for="observaciones">
+      Observaciones
+    </label>
+
+    <textarea
+      id="observaciones"
+      class="form-control"
+      rows="3"
+      formControlName="observaciones">
+    </textarea>
+
+  </div>
+
+
+  <div class="col-12">
+
+    <button
+      class="btn btn-success me-2"
+      type="submit">
+
+      <i class="bi bi-save me-1"></i>
+      Guardar recolección
+
+    </button>
+
+
+    <button
+      class="btn btn-outline-secondary"
+      type="button"
+      (click)="cancelar.emit()">
+
+      Cancelar
+
+    </button>
+
+  </div>
+
 </form>

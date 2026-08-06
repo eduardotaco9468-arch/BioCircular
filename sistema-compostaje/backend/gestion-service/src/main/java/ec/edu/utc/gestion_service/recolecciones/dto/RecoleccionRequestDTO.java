@@ -1,68 +1,30 @@
 package ec.edu.utc.gestion_service.recolecciones.dto;
 
-
-import ec.edu.utc.gestion_service.recolecciones.entity.TipoProblema;
-import ec.edu.utc.gestion_service.recolecciones.entity.UnidadMedida;
-
-
+import ec.edu.utc.gestion_service.recolecciones.entity.EstadoRecoleccion;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
-
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class RecoleccionRequestDTO {
-
-
-    @NotNull(message = "La fecha es obligatoria")
-    private LocalDate fecha;
-
-
-    private LocalTime horaInicio;
-
-
-    private LocalTime horaFin;
-
-
-
     @NotNull(message = "El cliente es obligatorio")
     private Long clienteId;
-
-
-
-    @NotNull(message = "El contenedor es obligatorio")
-    private Long contenedorId;
-
-
-
-    @NotNull(message = "La ruta es obligatoria")
-    private Long rutaId;
-
-
-
-    @NotNull(message = "El peso o cantidad es obligatorio")
-    private BigDecimal pesoCantidad;
-
-
-
-    @NotNull(message = "La unidad es obligatoria")
-    private UnidadMedida unidad;
-
-
-
-    private TipoProblema tipoProblema;
-
-
-    private String observacion;
-
-
+    private Long operadorId;
+    private Long vehiculoId;
+    @NotNull(message = "La fecha programada es obligatoria")
+    private LocalDateTime fechaProgramada;
+    private LocalDateTime fechaRealizada;
+    @NotNull(message = "El estado es obligatorio")
+    private EstadoRecoleccion estado;
+    @Positive(message = "El peso recolectado debe ser positivo")
+    private BigDecimal pesoRecolectado;
+    @NotBlank(message = "La unidad es obligatoria")
+    private String unidad;
+    private String observaciones;
 }

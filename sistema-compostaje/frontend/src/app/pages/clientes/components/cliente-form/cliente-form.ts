@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Cliente } from '../../interfaces/cliente.interface';
 
 @Component({
@@ -19,13 +19,13 @@ export class ClienteForm implements OnChanges {
   constructor(private fb: FormBuilder) {
     this.clienteForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100), Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñÜü ]+$/)]],
-      cedula: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      tipoCliente: ['Residencial', Validators.required],
+      identificacion: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
       telefono: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       direccion: ['', Validators.required],
       sector: ['', Validators.required],
-      tipo: ['Residencial', Validators.required],
-      estado: [true, this.estadoRequerido]
+      estado: [true]
     });
   }
 
@@ -40,7 +40,7 @@ export class ClienteForm implements OnChanges {
       this.clienteForm.markAllAsTouched();
       return;
     }
-    this.guardarCliente.emit(this.clienteForm.value);
+    this.guardarCliente.emit(this.clienteForm.getRawValue());
     this.reiniciarFormulario();
   }
 
@@ -52,10 +52,6 @@ export class ClienteForm implements OnChanges {
   cancelarFormulario(): void { this.cancelar.emit(); }
 
   private reiniciarFormulario(): void {
-    this.clienteForm.reset({ tipo: 'Residencial', estado: true });
-  }
-
-  private estadoRequerido(control: AbstractControl) {
-    return typeof control.value === 'boolean' ? null : { required: true };
+    this.clienteForm.reset({ tipoCliente: 'Residencial', estado: true });
   }
 }

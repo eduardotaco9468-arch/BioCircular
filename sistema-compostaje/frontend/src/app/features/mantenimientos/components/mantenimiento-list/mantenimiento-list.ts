@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Mantenimiento } from '../../models/mantenimiento.model';
 import { MantenimientoService } from '../../services/mantenimiento.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-mantenimiento-list',
@@ -13,15 +14,27 @@ import { MantenimientoService } from '../../services/mantenimiento.service';
 })
 export class MantenimientoList implements OnInit {
   mantenimientos: Mantenimiento[] = [];
+  private cargarSub!: Subscription;
 
   constructor(private mantenimientoService: MantenimientoService) {}
 
   ngOnInit(): void { this.cargarMantenimientos(); }
-  cargarMantenimientos(): void { this.mantenimientos = this.mantenimientoService.obtenerTodos(); }
+  cargarMantenimientos(): void {
+    this.cargarSub = this.mantenimientoService.obtenerTodos().subscribe(data => {
+      this.mantenimientos = data;
+    });
+  }
   eliminar(id: number): void {
     if (confirm('¿Está seguro de eliminar este mantenimiento?')) {
-      this.mantenimientoService.eliminar(id);
+      this.mantenimientoService.eliminar(id).subscribe()
       this.cargarMantenimientos();
     }
   }
+
+  ngOnDestroy(): void {
+    if (this.cargarSub) {
+      this.cargarSub.unsubscribe();
+    }
+  }
+
 }

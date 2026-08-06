@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ClienteForm } from '../cliente-form/cliente-form';
+import { Cliente } from '../../interfaces/cliente.interface';
 
 
 @Component({
@@ -23,7 +24,7 @@ export class ClienteModal {
 
 
   @Input()
-  clienteEditar:any = null;
+  clienteEditar: Cliente | null = null;
 
 
 
@@ -33,11 +34,11 @@ export class ClienteModal {
 
 
   @Output()
-  guardar = new EventEmitter<any>();
+  guardar = new EventEmitter<Cliente>();
 
 
 
-  cerrarModal(){
+  cerrarModal(): void {
     if (this.clienteFormComponent?.clienteForm.dirty && !confirm('¿Desea salir sin guardar los cambios?')) return;
     this.cerrar.emit();
 
@@ -46,18 +47,8 @@ export class ClienteModal {
 
 
 
-  guardarCliente(cliente:any){
-
-
-    console.log(
-      'Cliente recibido en modal:',
-      cliente
-    );
-
-
+  guardarCliente(cliente: Cliente): void {
     this.guardar.emit(cliente);
-
-
   }
 
 

@@ -14,11 +14,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import ec.edu.utc.gestion_service.service.AuthGestionClient;
+
 @Service
 @RequiredArgsConstructor
 public class ClienteService {
-
     private final ClienteRepository clienteRepository;
+    private final AuthGestionClient authGestionClient;
 
     public ClienteResponseDTO registrar(ClienteRequestDTO dto) {
 
@@ -53,6 +55,11 @@ public class ClienteService {
         return ClienteMapper.toResponseDTO(cliente);
     }
 
+        public ClienteResponseDTO buscarPorIdentificacion(String identificacion) {
+        Cliente cliente = clienteRepository.findByIdentificacion(identificacion)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado."));
+        return ClienteMapper.toResponseDTO(cliente);
+    }
     public ClienteResponseDTO actualizar(Long id, ClienteUpdateDTO dto) {
 
         Cliente cliente = clienteRepository.findById(id)
@@ -78,3 +85,5 @@ public class ClienteService {
     }
 
 }
+
+

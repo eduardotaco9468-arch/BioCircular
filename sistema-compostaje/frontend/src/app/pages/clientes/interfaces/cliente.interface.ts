@@ -1,21 +1,12 @@
 export interface Cliente {
-
-    id:number;
-
-    nombre:string;
-
-    cedula:string;
-
-    correo:string;
-
-    telefono:string;
-
-    direccion:string;
-
-    sector:string;
-
-    tipo:string;
-
-    estado:boolean;
-
+  id?: number;
+  nombre: string;
+  tipoCliente: string;
+  identificacion: string;
+  telefono: string;
+  correo: string;
+  direccion: string;
+  sector: string;
+  estado: boolean;
+  fechaRegistro?: string;
 }

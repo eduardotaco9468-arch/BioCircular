@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-
-import { ClienteMockService } from './services/cliente-mock.service';
-import { Cliente } from './interfaces/cliente.interface';
-import { ToastService } from '../../core/services/toast.service';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../core/services/auth.service';
+import { Rol } from '../../core/models/rol.enum';
 import { ClienteModal } from './components/cliente-modal/cliente-modal';
+import { Cliente } from './interfaces/cliente.interface';
+import { ClienteService } from './services/cliente.service';
 
 @Component({
   selector: 'app-clientes',
@@ -16,70 +16,98 @@ import { ClienteModal } from './components/cliente-modal/cliente-modal';
 export class Clientes implements OnInit {
   clientes: Cliente[] = [];
   clientesFiltrados: Cliente[] = [];
-  filtroForm: FormGroup;
+  cargando = false;
+  mensajeExito = '';
+  mensajeError = '';
   mostrarModal = false;
+  mostrarConfirmacion = false;
   clienteSeleccionado: Cliente | null = null;
+  clienteDetalle: Cliente | null = null;
+
+  readonly filtroForm;
 
   constructor(
-    private fb: FormBuilder,
-    private clienteService: ClienteMockService,
-    private toastService: ToastService
+    private readonly fb: FormBuilder,
+    private readonly clienteService: ClienteService,
+    private readonly authService: AuthService
   ) {
-    this.filtroForm = this.fb.group({
-      busqueda: [''],
-      tipoSeleccionado: ['']
-    });
+    this.filtroForm = this.fb.nonNullable.group({ busqueda: '', estado: '' });
+  }
+
+  get esAdministrador(): boolean {
+    return this.authService.tieneRol(Rol.ADMIN);
   }
 
   ngOnInit(): void {
-    this.clientes = this.clienteService.getClientes();
-    this.clientesFiltrados = this.clientes;
+    this.cargarClientes();
     this.filtroForm.valueChanges.subscribe(() => this.filtrarClientes());
   }
 
-  abrirModal(): void { this.mostrarModal = true; }
-
-  cerrarModal(): void {
-    this.mostrarModal = false;
-    this.clienteSeleccionado = null;
-  }
-
-  editarCliente(cliente: Cliente): void {
-    this.clienteSeleccionado = cliente;
-    this.mostrarModal = true;
-  }
-
-  eliminarCliente(cliente: Cliente): void {
-    if (confirm(`¿Está seguro de eliminar el cliente ${cliente.nombre}? Esta acción no se puede deshacer.`)) {
-      this.clientes = this.clientes.filter(c => c.id !== cliente.id);
-      this.toastService.danger('Cliente eliminado correctamente');
-      this.filtrarClientes();
-    }
-  }
-
-  guardarCliente(cliente: Omit<Cliente, 'id'>): void {
-    if (this.clienteSeleccionado) {
-      const index = this.clientes.findIndex(c => c.id === this.clienteSeleccionado?.id);
-      if (index !== -1) {
-        this.clientes[index] = { ...this.clienteSeleccionado, ...cliente };
-        this.toastService.info('Cliente actualizado correctamente');
+  cargarClientes(): void {
+    this.cargando = true;
+    this.mensajeError = '';
+    this.clienteService.getClientes().subscribe({
+      next: clientes => {
+        this.clientes = clientes;
+        this.filtrarClientes();
+        this.cargando = false;
+      },
+      error: () => {
+        this.mensajeError = 'No fue posible cargar los clientes.';
+        this.cargando = false;
       }
-    } else {
-      const nuevoCliente: Cliente = { id: Math.max(0, ...this.clientes.map(c => c.id)) + 1, ...cliente };
-      this.clientes.push(nuevoCliente);
-      this.toastService.success('Cliente creado correctamente');
-    }
+    });
+  }
 
-    this.cerrarModal();
-    this.filtrarClientes();
+  abrirModal(): void { this.clienteSeleccionado = null; this.mostrarModal = true; }
+  editarCliente(cliente: Cliente): void { this.clienteSeleccionado = { ...cliente }; this.mostrarModal = true; }
+  cerrarModal(): void { this.mostrarModal = false; this.clienteSeleccionado = null; }
+  verDetalle(cliente: Cliente): void { this.clienteDetalle = cliente; }
+  cerrarDetalle(): void { this.clienteDetalle = null; }
+  solicitarEliminacion(cliente: Cliente): void { this.clienteSeleccionado = cliente; this.mostrarConfirmacion = true; }
+  cancelarEliminacion(): void { this.mostrarConfirmacion = false; this.clienteSeleccionado = null; }
+
+  guardarCliente(cliente: Cliente): void {
+    const operacion = this.clienteSeleccionado?.id
+      ? this.clienteService.actualizarCliente(this.clienteSeleccionado.id, cliente)
+      : this.clienteService.crearCliente(cliente);
+
+    operacion.subscribe({
+      next: () => {
+        this.mensajeExito = this.clienteSeleccionado?.id ? 'Cliente actualizado correctamente' : 'Cliente creado correctamente';
+        this.mensajeError = '';
+        this.cerrarModal();
+        this.cargarClientes();
+      },
+      error: error => this.mensajeError = this.mensajeErrorDesde(error, 'No fue posible guardar el cliente.')
+    });
+  }
+
+  confirmarEliminacion(): void {
+    const id = this.clienteSeleccionado?.id;
+    if (!id) return;
+
+    this.clienteService.eliminarCliente(id).subscribe({
+      next: () => {
+        this.mensajeExito = 'Cliente eliminado correctamente';
+        this.mensajeError = '';
+        this.cancelarEliminacion();
+        this.cargarClientes();
+      },
+      error: error => this.mensajeError = this.mensajeErrorDesde(error, 'No fue posible eliminar el cliente.')
+    });
   }
 
   filtrarClientes(): void {
-    const busqueda = (this.filtroForm.get('busqueda')?.value ?? '').toLowerCase();
-    const tipoSeleccionado = this.filtroForm.get('tipoSeleccionado')?.value ?? '';
+    const { busqueda, estado } = this.filtroForm.getRawValue();
+    const termino = busqueda.toLowerCase().trim();
     this.clientesFiltrados = this.clientes.filter(cliente =>
-      cliente.nombre.toLowerCase().includes(busqueda) &&
-      (tipoSeleccionado === '' || cliente.tipo === tipoSeleccionado)
+      (!termino || cliente.nombre.toLowerCase().includes(termino)) &&
+      (estado === '' || String(cliente.estado) === estado)
     );
+  }
+
+  private mensajeErrorDesde(error: { error?: { message?: string } }, predeterminado: string): string {
+    return error.error?.message ? `Error: ${error.error.message}` : predeterminado;
   }
 }

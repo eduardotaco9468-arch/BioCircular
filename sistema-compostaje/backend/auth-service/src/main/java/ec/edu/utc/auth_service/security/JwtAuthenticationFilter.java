@@ -96,6 +96,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder
                     .getContext()
                     .setAuthentication(authentication);
+                
+                System.out.println("USUARIO JWT: " + email);
+                System.out.println("ROL JWT: " + rol);
+                System.out.println("AUTHORITIES: " + authentication.getAuthorities());
 
 
 

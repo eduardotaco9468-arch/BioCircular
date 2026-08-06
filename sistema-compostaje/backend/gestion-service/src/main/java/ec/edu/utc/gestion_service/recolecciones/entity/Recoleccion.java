@@ -1,93 +1,46 @@
 package ec.edu.utc.gestion_service.recolecciones.entity;
 
-
-import ec.edu.utc.gestion_service.clientes.entity.Cliente;
-import ec.edu.utc.gestion_service.contenedores.entity.Contenedor;
-import ec.edu.utc.gestion_service.rutas.entity.Ruta;
-
-
 import jakarta.persistence.*;
-
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "recolecciones")
+@Table(name = "gestion_recolecciones")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Recoleccion {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private Long clienteId;
+
+    private Long operadorId;
+
+    private Long vehiculoId;
 
     @Column(nullable = false)
-    private LocalDate fecha;
+    private LocalDateTime fechaProgramada;
 
-
-    private LocalTime horaInicio;
-
-
-    private LocalTime horaFin;
-
-
+    private LocalDateTime fechaRealizada;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoRecoleccion estado;
 
+    @Column(precision = 12, scale = 2)
+    private BigDecimal pesoRecolectado;
 
+    @Column(length = 20)
+    private String unidad;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cliente_id", nullable = false)
-    private Cliente cliente;
-
-
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contenedor_id", nullable = false)
-    private Contenedor contenedor;
-
-
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ruta_id", nullable = false)
-    private Ruta ruta;
-
-
-
-
-    @Column(nullable = false)
-    private BigDecimal pesoCantidad;
-
-
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UnidadMedida unidad;
-
-
-
-    @Enumerated(EnumType.STRING)
-    private TipoProblema tipoProblema;
-
-
-
-    private String observacion;
-
-
+    @Column(length = 1000)
+    private String observaciones;
 }

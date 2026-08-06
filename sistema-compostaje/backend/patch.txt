@@ -1,0 +1,9 @@
+*** Begin Patch
+*** Update File: auth-service/src/main/java/ec/edu/utc/auth_service/service/UsuarioService.java
+@@
+import ec.edu.utc.auth_service.exception.UsuarioNoEncontradoException;
++import ec.edu.utc.auth_service.dto.ClienteResponseDTO;
++import ec.edu.utc.auth_service.dto.ClienteUpdateDTO;
++import org.springframework.web.client.HttpClientErrorException;
+@Service
+*** End Patch

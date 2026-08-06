@@ -1,32 +1,5 @@
-<div class="container-fluid">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Recolecciones</h2>
-    <button class="btn btn-success" (click)="abrirModal()"><i class="bi bi-plus-circle me-1"></i>Nueva Recolección</button>
-  </div>
-
-  @if (mostrarModal) {
-    <app-recoleccion-modal [recoleccionEditar]="recoleccionSeleccionada" (cerrar)="cerrarModal()" (guardar)="guardarRecoleccion($event)"></app-recoleccion-modal>
-  }
-
-  <form class="row mb-4" [formGroup]="filtroForm">
-    <div class="col-md-6 mb-2 mb-md-0"><input type="text" class="form-control" placeholder="Buscar por cliente, operador o vehículo..." formControlName="busqueda"></div>
-    <div class="col-md-4"><select class="form-select" formControlName="estadoSeleccionado"><option value="">Todos los estados</option><option value="Pendiente">Pendiente</option><option value="Completada">Completada</option><option value="Cancelada">Cancelada</option></select></div>
-  </form>
-
-  <div class="card shadow-sm"><div class="card-body"><div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead><tr><th>Cliente</th><th>Operador</th><th>Vehículo</th><th>Fecha</th><th>Peso</th><th>Estado</th><th>Acciones</th></tr></thead>
-      <tbody>
-        @for (recoleccion of recoleccionesFiltradas; track recoleccion.id) {
-          <tr>
-            <td>{{ recoleccion.cliente }}</td><td>{{ recoleccion.operador }}</td><td>{{ recoleccion.vehiculo }}</td><td>{{ recoleccion.fecha }}</td><td>{{ recoleccion.peso }} kg</td>
-            <td><span class="badge" [class]="claseEstado(recoleccion.estado)">{{ recoleccion.estado }}</span></td>
-            <td><button class="btn btn-sm btn-primary me-2" title="Editar" (click)="editarRecoleccion(recoleccion)"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" title="Eliminar" (click)="eliminarRecoleccion(recoleccion)"><i class="bi bi-trash"></i></button></td>
-          </tr>
-        } @empty {
-          <tr><td colspan="7" class="text-center text-muted py-4">No se encontraron recolecciones.</td></tr>
-        }
-      </tbody>
-    </table>
-  </div></div></div>
-</div>
+<div class="container-fluid"><div class="d-flex justify-content-between align-items-center mb-4"><h2>@if (esCliente) { Mis recolecciones } @else if (esOperador) { Mis recolecciones asignadas } @else { Recolecciones }</h2>@if (esAdministrador) {<button class="btn btn-success" (click)="abrirModal()"><i class="bi bi-plus-circle me-1"></i>Nueva recolección</button>}</div>
+@if (mensajeExito) {<div class="alert alert-success alert-dismissible fade show" role="alert">{{ mensajeExito }}<button type="button" class="btn-close" (click)="mensajeExito = ''"></button></div>} @if (mensajeError) {<div class="alert alert-danger alert-dismissible fade show" role="alert">{{ mensajeError }}<button type="button" class="btn-close" (click)="mensajeError = ''"></button></div>}
+@if (mostrarModal) {<app-recoleccion-modal [recoleccionEditar]="recoleccionSeleccionada" (cerrar)="cerrarModal()" (guardar)="guardarRecoleccion($event)"></app-recoleccion-modal>}
+<form class="row mb-4" [formGroup]="filtroForm"><div class="col-md-6 mb-2 mb-md-0"><input type="text" class="form-control" placeholder="Buscar por ID, cliente, operador o vehículo..." formControlName="busqueda"></div><div class="col-md-4"><select class="form-select" formControlName="estadoSeleccionado"><option value="">Todos los estados</option><option value="PENDIENTE">Pendiente</option><option value="EN_PROCESO">En proceso</option><option value="REALIZADA">Realizada</option><option value="CANCELADA">Cancelada</option></select></div></form>
+<div class="card shadow-sm"><div class="card-body"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>ID</th><th>Cliente</th><th>Operador</th><th>Fecha</th><th>Estado</th><th>Peso</th>@if (!esCliente) {<th>Acciones</th>}</tr></thead><tbody>@if (cargando) {<tr><td [attr.colspan]="esCliente ? 6 : 7" class="text-center">Cargando...</td></tr>} @for (recoleccion of recoleccionesFiltradas; track recoleccion.id) {<tr><td>{{ recoleccion.id }}</td><td>{{ recoleccion.clienteId }}</td><td>{{ recoleccion.operadorId ?? 'Sin asignar' }}</td><td>{{ recoleccion.fechaProgramada | date:'dd/MM/yyyy HH:mm' }}</td><td>@if (esOperador) {<select class="form-select form-select-sm" [value]="recoleccion.estado" (change)="actualizarEstado(recoleccion, $any($event.target).value)">@for (estado of estadosOperador; track estado) {<option [value]="estado">{{ estado }}</option>}</select>} @else {<span class="badge" [class]="claseEstado(recoleccion.estado)">{{ recoleccion.estado }}</span>}</td><td>{{ recoleccion.pesoRecolectado ?? '-' }} {{ recoleccion.unidad }}</td>@if (!esCliente) {<td>@if (esAdministrador) {<button class="btn btn-sm btn-primary me-2" (click)="editarRecoleccion(recoleccion)"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" (click)="eliminarRecoleccion(recoleccion)"><i class="bi bi-trash"></i></button>}</td>}</tr>} @empty {<tr><td [attr.colspan]="esCliente ? 6 : 7" class="text-center text-muted py-4">No se encontraron recolecciones.</td></tr>}</tbody></table></div></div></div></div>

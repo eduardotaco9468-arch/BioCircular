@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ToastService } from '../../core/services/toast.service';
 import { IncidenciaModal } from './components/incidencia-modal/incidencia-modal';
 import { Incidencia } from './interfaces/incidencia.interface';
-import { IncidenciaMockService } from './services/incidencia-mock.service';
+import { IncidenciaService } from './services/incidencia.service';
+import { Subscription } from 'rxjs';
 
 @Component({ selector: 'app-incidencias', standalone: true, imports: [ReactiveFormsModule, IncidenciaModal], templateUrl: './incidencias.html', styleUrl: './incidencias.css' })
 export class Incidencias implements OnInit {
@@ -12,15 +13,16 @@ export class Incidencias implements OnInit {
   filtroForm: FormGroup;
   mostrarModal = false;
   incidenciaSeleccionada: Incidencia | null = null;
+  private actualizarListadoSub!: Subscription;
 
-  constructor(private fb: FormBuilder, private incidenciaService: IncidenciaMockService, private toastService: ToastService) { this.filtroForm = this.fb.group({ busqueda: [''], prioridadSeleccionada: [''] }); }
+  constructor(private fb: FormBuilder, private incidenciaService: IncidenciaService, private toastService: ToastService) { this.filtroForm = this.fb.group({ busqueda: [''], prioridadSeleccionada: [''] }); }
   ngOnInit(): void { this.actualizarListado(); this.filtroForm.valueChanges.subscribe(() => this.filtrarIncidencias()); }
   abrirModal(): void { this.incidenciaSeleccionada = null; this.mostrarModal = true; }
   cerrarModal(): void { this.mostrarModal = false; this.incidenciaSeleccionada = null; }
   editarIncidencia(incidencia: Incidencia): void { this.incidenciaSeleccionada = { ...incidencia }; this.mostrarModal = true; }
 
   eliminarIncidencia(incidencia: Incidencia): void {
-    if (confirm(`¿Está seguro de eliminar la incidencia ${incidencia.titulo}? Esta acción no se puede deshacer.`) && this.incidenciaService.eliminarIncidencia(incidencia.id)) {
+    if (confirm(`¿Está seguro de eliminar la incidencia ${incidencia.titulo}? Esta acción no se puede deshacer.`) && this.incidenciaService.delete(incidencia.id)) {
       this.actualizarListado();
       this.toastService.danger('Incidencia eliminada correctamente');
     }
@@ -28,10 +30,10 @@ export class Incidencias implements OnInit {
 
   guardarIncidencia(incidencia: Omit<Incidencia, 'id'>): void {
     if (this.incidenciaSeleccionada) {
-      this.incidenciaService.actualizarIncidencia(this.incidenciaSeleccionada.id, incidencia);
+      this.incidenciaService.update(this.incidenciaSeleccionada.id, incidencia);
       this.toastService.info('Incidencia actualizada correctamente');
     } else {
-      this.incidenciaService.crearIncidencia(incidencia);
+      this.incidenciaService.create(incidencia);
       this.toastService.success('Incidencia creada correctamente');
     }
     this.cerrarModal();
@@ -48,5 +50,17 @@ export class Incidencias implements OnInit {
   }
 
   clasePrioridad(prioridad: string): string { return prioridad === 'Alta' ? 'bg-danger' : prioridad === 'Media' ? 'bg-warning text-dark' : 'bg-success'; }
-  private actualizarListado(): void { this.incidencias = this.incidenciaService.getIncidencias(); this.filtrarIncidencias(); }
+  private actualizarListado(): void {
+    this.actualizarListadoSub = this.incidenciaService.getAll().subscribe(data => {
+      this.incidencias = data;
+      this.filtrarIncidencias();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.actualizarListadoSub) {
+      this.actualizarListadoSub.unsubscribe();
+    }
+  }
+
 }

@@ -1,29 +1,32 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Contenedor } from '../models/contenedor.model';
+import { API_BASE_URL } from '../../../core/services/api.service';
 
 @Injectable({ providedIn: 'root' })
 export class ContenedorService {
-  private contenedores: Contenedor[] = [
-    { id: 1, codigo: 'CON-001', capacidad: 120, estado: 'Disponible' }
-  ];
+  private readonly apiUrl = `${API_BASE_URL}/gestion/contenedores`;
 
-  obtenerTodos(): Contenedor[] { return [...this.contenedores]; }
-  obtenerPorId(id: number): Contenedor | undefined { return this.contenedores.find(contenedor => contenedor.id === id); }
-  crear(contenedor: Omit<Contenedor, 'id'>): Contenedor {
-    const nuevo = { id: Math.max(0, ...this.contenedores.map(item => item.id)) + 1, ...contenedor };
-    this.contenedores.push(nuevo);
-    return nuevo;
+  constructor(private readonly http: HttpClient) {}
+
+  obtenerTodos(): Observable<Contenedor[]> {
+    return this.http.get<Contenedor[]>(this.apiUrl);
   }
-  actualizar(id: number, cambios: Omit<Contenedor, 'id'>): Contenedor | undefined {
-    const indice = this.contenedores.findIndex(contenedor => contenedor.id === id);
-    if (indice === -1) return undefined;
-    this.contenedores[indice] = { id, ...cambios };
-    return this.contenedores[indice];
+
+  getById(id: number): Observable<Contenedor> {
+    return this.http.get<Contenedor>(`${this.apiUrl}/${id}`);
   }
-  eliminar(id: number): boolean {
-    const indice = this.contenedores.findIndex(contenedor => contenedor.id === id);
-    if (indice === -1) return false;
-    this.contenedores.splice(indice, 1);
-    return true;
+
+  crear(contenedor: Omit<Contenedor, 'id'>): Observable<Contenedor> {
+    return this.http.post<Contenedor>(this.apiUrl, contenedor);
+  }
+
+  actualizar(id: number, contenedor: Omit<Contenedor, 'id'>): Observable<Contenedor> {
+    return this.http.put<Contenedor>(`${this.apiUrl}/${id}`, contenedor);
+  }
+
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

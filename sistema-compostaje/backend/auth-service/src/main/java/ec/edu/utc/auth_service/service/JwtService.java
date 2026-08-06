@@ -40,7 +40,7 @@ public class JwtService {
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody()
-                .get("role", String.class);
+                .get("rol", String.class);
 
     }
 

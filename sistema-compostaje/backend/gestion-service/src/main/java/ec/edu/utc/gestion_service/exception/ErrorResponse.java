@@ -10,9 +10,12 @@ import java.time.LocalDateTime;
 public class ErrorResponse {
 
     private String mensaje;
-
     private Integer codigo;
-
     private LocalDateTime fecha;
 
+    public ErrorResponse(String mensaje, int status, LocalDateTime fecha) {
+        this.mensaje = mensaje;
+        this.codigo = status;
+        this.fecha = fecha;
+    }
 }
